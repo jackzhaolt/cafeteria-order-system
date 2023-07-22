@@ -1,0 +1,26 @@
+[
+    {
+        "name": "Steak",
+        "price": 19.99
+    },
+    {
+        "name": "Salad",
+        "price": 8.99
+    },
+    {
+        "name": "Pasta",
+        "price": 15.99
+    },
+    {
+        "name": "Soup",
+        "price": 6.99
+    },
+    {
+        "name": "Cake",
+        "price": 6.99
+    },
+    {
+        "name": "Ice Cream",
+        "price": 4.99
+    }
+]

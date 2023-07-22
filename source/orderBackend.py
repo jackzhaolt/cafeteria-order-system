@@ -7,7 +7,8 @@ MENU_YAML = "cafeMenu.yml"
 MENU = {}
 
 
-def yaml_reader(yaml_file):
+def yaml_reader():
+    yaml_file = os.path.join(os.path.dirname(__file__), MENU_YAML)
     global MENU  # pylint: disable-global-statement
     MENU = {}
     with open(yaml_file, "r", encoding="utf-8") as steam:
@@ -17,25 +18,65 @@ def yaml_reader(yaml_file):
             print(f"yaml reader failed with error: {err}")
 
 
-def main():
+def validateLogin(username, password):
+    # TODO Implement validate login page here
+    print("username entered :", username)
+    print("password entered :", password)
+    return True
+
+
+def getMenuStr():
     menu_path = os.path.join(os.path.dirname(__file__), MENU_YAML)
     yaml_reader(menu_path)
-    test_json = {
-        "dishes": {
-            "猪肉类": {
-                "菜名1": "2",
-                "菜名2": "3",
-            }
+    return MENU
+
+
+def getMenuData():
+    """Generate a big json file in the format of
+    data = {
+        <category id 1> : {
+            name : <category name>,
+            items : [
+                {
+                    id: <dish id>
+                    name: <dish name>
+                    price: <dish price>
+                },
+                {
+                    id: <dish id 2>
+                    name: <dish name>
+                    price: <dish price>
+                }
+            ]
         },
-        "num_of_table": "2",
-        "num_of_guest": "5",
-        "room_id": "202",
-        "meal_type": "午",
-        "orderID": "1-1",
-        "orderDate": "2023.6.1",
+        <category id 2> : ...
     }
-    test_order = Order(test_json)
-    print(test_order.generate_confirmation())
+
+    """
+    yaml_reader()
+    unsorted_data = {}
+    sorted_data = {}
+    # Categorory id is always in ascending order due to the way listed in yml file
+    for category_id, category_name in MENU["Category"].items():
+        unsorted_data[category_id] = {"name": category_name, "items": []}
+        sorted_data[category_id] = {"name": category_name, "items": []}
+    for dish_name in MENU["Menu"]:
+        dish_id = MENU["Menu"][dish_name]["id"]
+        dish_price = MENU["Menu"][dish_name]["price"]
+        dish_dict = {"id": dish_id, "name": dish_name, "price": dish_price}
+        # The magic in the key is to round the id to a single int and then convert it back to str
+        unsorted_data[str(int(float(dish_id)))]["items"].append(dish_dict)
+
+    # Sort the items based on ids
+    for category in unsorted_data:
+        sorted_items = sorted(unsorted_data[category]["items"], key=lambda x: x["id"])
+        sorted_data[category]["items"] = sorted_items
+
+    return sorted_data
+
+
+def main():
+    yaml_reader()
 
 
 class Order:
